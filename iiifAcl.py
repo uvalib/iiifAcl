@@ -14,7 +14,14 @@ while 1:
     line = sys.stdin.readline()
 
     m = reobjthumb.match(line)
-    if m and int(m.group(4)) < 201 and int(m.group(5)) < 201 :
+    try:
+        if m:
+            wid = int(m.group(4))
+            ht = int(m.group(5))
+    except ValueError, e:
+        wid = 999
+        ht = 9999
+    if m and wid < 201 and ht < 201 :
         pid = m.group(1) + ':' + m.group(2)
         urlend = 'full' '/' + m.group(3) + m.group(4) + ',' + m.group(5) + '/' + m.group(6)
         perm = 'public'
@@ -36,4 +43,4 @@ while 1:
             urlend = ''
             perm = 'private'
             
-    print('/iiif%s/%s/%s' %(perm[:3],pid,urlend) )
+    print '/iiif%s/%s/%s' %(perm[:3],pid,urlend) 
