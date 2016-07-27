@@ -14,13 +14,17 @@ while 1:
     line = sys.stdin.readline()
 
     m = reobjthumb.match(line)
-    try:
-        if m:
+
+    if m:
+        try:
             wid = int(m.group(4))
+        except ValueError, e:
+            wid = 0
+        try:
             ht = int(m.group(5))
-    except ValueError, e:
-        wid = 999
-        ht = 9999
+        except ValueError, e:
+            ht = 0
+
     if m and wid < 201 and ht < 201 :
         pid = m.group(1) + ':' + m.group(2)
         urlend = 'full' '/' + m.group(3) + m.group(4) + ',' + m.group(5) + '/' + m.group(6)
