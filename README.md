@@ -16,9 +16,11 @@ RewriteMaps return a rewritten URI - the script will return the original URI but
 
 These new URIs will then be pass through the folling RewriteRules:
 
-RewriteRule ^/iiifpub/([^:]{1,}):([0-9][0-9])?([0-9][0-9])?([0-9][0-9])?([0-9][0-9])?([0-9])?/(.*)$ /iipsrvpub?IIIF=/var/www/html/$1/$2/$3/$4/$5$6/$2$3$4$5$6.jp2/$7  [PT]
-RewriteRule ^/iiifuva/([^:]{1,}):([0-9][0-9])?([0-9][0-9])?([0-9][0-9])?([0-9][0-9])?([0-9])?/(.*)$ /iipsrvuva?IIIF=/var/www/html/$1/$2/$3/$4/$5/$6/$2$3$4$5$6.jp2/$7  [PT]
-RewriteRule ^/iiifpri/([^:]{1,}):([0-9][0-9])?([0-9][0-9])?([0-9][0-9])?([0-9][0-9])?([0-9])?/(.*)$ /iipsrvpri?IIIF=/var/www/html/$1/$2/$3/$4/$5$6/$2$3$4$5$6.jp2/$7  [PT]
+```
+RewriteRule ^/iiifpub/([^:]{1,}):([0-9][0-9])?([0-9][0-9])?([0-9][0-9])?([0-9][0-9])?([0-9])?/(.*)$ /iipsrvpub?IIIF=/jp2k/file/path/$1/$2/$3/$4/$5$6/$2$3$4$5$6.jp2/$7  [PT]
+RewriteRule ^/iiifuva/([^:]{1,}):([0-9][0-9])?([0-9][0-9])?([0-9][0-9])?([0-9][0-9])?([0-9])?/(.*)$ /iipsrvuva?IIIF=/jp2k/file/path/$1/$2/$3/$4/$5/$6/$2$3$4$5$6.jp2/$7  [PT]
+RewriteRule ^/iiifpri/([^:]{1,}):([0-9][0-9])?([0-9][0-9])?([0-9][0-9])?([0-9][0-9])?([0-9])?/(.*)$ /iipsrvpri?IIIF=/jp2k/file/path/$1/$2/$3/$4/$5$6/$2$3$4$5$6.jp2/$7  [PT]
+```
 
 Each causes the iiif server to be invoked from one of three hard-linked paths.  The Apache config can then use Directory directives to apply appropriate access restrictions to each level.
 
