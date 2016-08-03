@@ -4,7 +4,7 @@ import fileinput
 import re
 from urllib2 import urlopen, URLError
 
-TSServiceURL = 'http://tracksysdev.lib.virginia.edu:8082/'
+TSServiceURL = 'http://tracksys.lib.virginia.edu:8082/'
 
 reobjthumb = re.compile("^/iiif/([^/]*):([0-9]*)/full/(\!?)([0-9]*),([0-9]*)/(.*)")
 reobjother = re.compile("^/iiif/([^/]*):([0-9]*)/(.*)")
