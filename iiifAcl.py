@@ -2,10 +2,17 @@
 import sys
 import fileinput
 import re
+import socket
 from urllib2 import urlopen, URLError
 
-TSServiceURL = 'http://rightsws.lib.virginia.edu:8089/'
+# DNS lookups intermittently hang for ~5 seconds, affecting urlopen().
+# To mitigate, we look up the IP address at invocation, and use it forever.
+# Since Apache invokes this script at startup and keeps it open indefinitely,
+# if the IP address for this server changes, Apache will need to be restarted.
 
+TSServer = 'rightsws.lib.virginia.edu'
+TSIPAddr = socket.gethostbyname(TSServer)
+TSServiceURL = 'http://' + TSIPAddr + ':8089/'
 
 reobjthumb = re.compile("^/iiif/([^/]*):([0-9]*)/full/(\!?)([0-9]*),([0-9]*)/(.*)")
 reobjother = re.compile("^/iiif/([^/]*):([0-9]*)/(.*)")
