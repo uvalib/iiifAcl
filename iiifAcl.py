@@ -3,7 +3,6 @@ import sys
 import fileinput
 import re
 import socket
-import json
 import logging
 from urllib2 import Request, urlopen, URLError, HTTPError
 
@@ -11,9 +10,9 @@ from urllib2 import Request, urlopen, URLError, HTTPError
 TSUseIPKludge = True
 
 # Tracksys definitions
-TSProtocol = 'https://'
+TSProtocol = 'http://'
 TSHostName = 'tracksys.lib.virginia.edu'
-TSSuffix = '/api/aries/'
+TSAPIPath = '/api/pid/%s/rights'
 TSDestination = TSHostName
 TSHeaders = {}
 TSTimeout = 30
@@ -27,13 +26,10 @@ if TSUseIPKludge:
 	TSDestination = TSIPAddress
 	TSHeaders = { "Host" : TSHostName }
 
-	# Tracksys redirects IP-based http requests to https, causing a hostname
-	# mismatch error.  To mitigate, we override this check:
-	import ssl
-	ssl.match_hostname = lambda cert, hostname: True
-
-# build final URL
-TSServiceURL = TSProtocol + TSDestination + TSSuffix
+	# Accessing the server by IP address can cause an SSL hostname mismatch error.
+	# To mitigate, we override this check:
+	#import ssl
+	#ssl.match_hostname = lambda cert, hostname: True
 
 # IIIF path matching regexes
 reobjthumb = re.compile("^/iiif/([^/]*):([0-9]*)/full/(\!?)([0-9]*),([0-9]*)/(.*)")
@@ -76,31 +72,18 @@ for line in sys.stdin:
 			# valid IIIF path: extract the PID and lookup access restrictions
 			pid = m.group(1) + ':' + m.group(2)
 			urlend = m.group(3)
-			req = Request(TSServiceURL + pid, headers=TSHeaders)
+			TSServiceURL = TSProtocol + TSDestination + TSAPIPath % (pid)
+			req = Request(TSServiceURL, headers=TSHeaders)
 			try:
-				# call the Aries API
+				# call the API
 				resp = urlopen(req,None,TSTimeout)
-				jres = resp.read().decode('ascii')
-				try:
-					# parse the JSON response
-					api = json.loads(jres)
-					try:
-						# check for access restriction field
-						perm = api['access_restriction']
-					except KeyError:
-						# access_restriction field does not exist
-						#warn('no access_restriction key in JSON: [' + jres + ']')
-						perm = 'public'
-				except ValueError, e:
-					# JSON parsing error
-					warn('could not parse JSON: [' + jres + ']')
-					perm = 'public'
+				perm = resp.read().decode('ascii')
 			except HTTPError, e:
-				# Aries API HTTP error
+				# API HTTP error
 				warn('API request failed: ' + str(e.code) + ' (' + str(e.reason) + ')')
 				perm = 'public'
 			except URLError, e:
-				# Aries API other error
+				# API other error
 				warn('API request failed: ' + str(e.reason))
 				perm = 'public'
 		else:
