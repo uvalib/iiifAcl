@@ -4,15 +4,26 @@ import fileinput
 import re
 import socket
 import logging
-from urllib2 import Request, urlopen, URLError, HTTPError
+from urllib2 import Request, urlopen, URLError
 
 # controls whether to use cached IP address workaround
 TSUseIPKludge = True
+# controls whether to use prod values
+TSUseProdVals = True
 
 # Tracksys definitions
-TSProtocol = 'http://'
-TSHostName = 'tracksys.lib.virginia.edu'
-TSAPIPath = '/api/pid/%s/rights'
+
+if TSUseProdVals:
+	TSProtocol = 'http://'
+	TSHostName = 'tracksys.lib.virginia.edu'
+	TSAPIPath = '/api/pid/%s/rights'
+else:
+	TSProtocol = 'http://'
+#	TSHostName = 'tracksysdev.lib.virginia.edu'
+#	TSAPIPath = ':8082/%s'
+	TSHostName = 'rightsws.lib.virginia.edu'
+	TSAPIPath = ':8089/%s'
+
 TSDestination = TSHostName
 TSHeaders = {}
 TSTimeout = 2
@@ -60,7 +71,7 @@ for line in sys.stdin:
 			ht = 0
 
 	# if this is a scaled image whose largest specified dimension does not exceed 200 pixels, allow public access
-	if m and wid < 201 and ht < 201 :
+	if m and wid < 201 and ht < 201:
 		pid = '%s:%s' % (m.group(1), m.group(2))
 		urlend = '%s/%s%s,%s/%s' ('full', m.group(3), m.group(4), m.group(5), m.group(6))
 		perm = 'public'
@@ -78,13 +89,9 @@ for line in sys.stdin:
 				# call the API
 				resp = urlopen(req,None,TSTimeout)
 				perm = resp.read().decode('ascii')
-			except HTTPError, e:
-				# API HTTP error
-				warn('API request failed for url [%s]: %s (%s)' % (TSServiceURL, str(e.code), str(e.reason)))
-				perm = 'public'
 			except URLError, e:
-				# API other error
-				warn('API request failed for url [%s]: %s' % (TSServiceURL, str(e.reason)))
+				# API error
+				warn('API request failed for url [%s]: %s' % (TSServiceURL, str(e)))
 				perm = 'public'
 		else:
 			# not a valid IIIF path
