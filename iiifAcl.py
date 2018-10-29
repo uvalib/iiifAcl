@@ -15,7 +15,7 @@ TSHostName = 'tracksys.lib.virginia.edu'
 TSAPIPath = '/api/pid/%s/rights'
 TSDestination = TSHostName
 TSHeaders = {}
-TSTimeout = 30
+TSTimeout = 2
 
 if TSUseIPKludge:
 	# DNS lookups intermittently hang for ~5 seconds, affecting urlopen().
@@ -39,7 +39,7 @@ reobjother = re.compile("^/iiif/([^/]*):([0-9]*)/(.*)")
 logging.basicConfig(format='[%(asctime)s] %(levelname)s: %(message)s')
 
 def warn(msg):
-	logging.warning('[' + line.strip() + '] ' + msg)
+	logging.warning('[%s] %s' % (line.strip(), msg))
 
 # apache communication loop
 for line in sys.stdin:
@@ -61,8 +61,8 @@ for line in sys.stdin:
 
 	# if this is a scaled image whose largest specified dimension does not exceed 200 pixels, allow public access
 	if m and wid < 201 and ht < 201 :
-		pid = m.group(1) + ':' + m.group(2)
-		urlend = 'full' '/' + m.group(3) + m.group(4) + ',' + m.group(5) + '/' + m.group(6)
+		pid = '%s:%s' % (m.group(1), m.group(2))
+		urlend = '%s/%s%s,%s/%s' ('full', m.group(3), m.group(4), m.group(5), m.group(6))
 		perm = 'public'
 	else:
 		# check if this is a valid IIIF path
@@ -70,7 +70,7 @@ for line in sys.stdin:
 
 		if m:
 			# valid IIIF path: extract the PID and lookup access restrictions
-			pid = m.group(1) + ':' + m.group(2)
+			pid = '%s:%s' % (m.group(1), m.group(2))
 			urlend = m.group(3)
 			TSServiceURL = TSProtocol + TSDestination + TSAPIPath % (pid)
 			req = Request(TSServiceURL, headers=TSHeaders)
@@ -80,11 +80,11 @@ for line in sys.stdin:
 				perm = resp.read().decode('ascii')
 			except HTTPError, e:
 				# API HTTP error
-				warn('API request failed: ' + str(e.code) + ' (' + str(e.reason) + ')')
+				warn('API request failed for url [%s]: %s (%s)' % (TSServiceURL, str(e.code), str(e.reason)))
 				perm = 'public'
 			except URLError, e:
 				# API other error
-				warn('API request failed: ' + str(e.reason))
+				warn('API request failed for url [%s]: %s' % (TSServiceURL, str(e.reason)))
 				perm = 'public'
 		else:
 			# not a valid IIIF path
