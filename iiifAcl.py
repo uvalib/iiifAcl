@@ -73,7 +73,7 @@ for line in sys.stdin:
 	# if this is a scaled image whose largest specified dimension does not exceed 200 pixels, allow public access
 	if m and wid < 201 and ht < 201:
 		pid = '%s:%s' % (m.group(1), m.group(2))
-		urlend = '%s/%s%s,%s/%s' ('full', m.group(3), m.group(4), m.group(5), m.group(6))
+		urlend = '%s/%s%s,%s/%s' % ('full', m.group(3), m.group(4), m.group(5), m.group(6))
 		perm = 'public'
 	else:
 		# check if this is a valid IIIF path
