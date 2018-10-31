@@ -53,7 +53,12 @@ def warn(msg):
 	logging.warning('[%s] %s' % (line.strip(), msg))
 
 # apache communication loop
-for line in fileinput.input():
+while 1:
+
+	line = sys.stdin.readline()
+
+	if not line:
+		exit(0);
 
 	# set default permission
 	perm = 'private'
