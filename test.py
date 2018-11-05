@@ -11,12 +11,13 @@ import string
 from subprocess import Popen, PIPE
 
 # sample pids for uva/pub/pri
-pids = { 'uva-lib:236153', 'uva-lib:453245', 'uva-lib:2807870' }
+pids = [ 'uva-lib:236153', 'uva-lib:453245', 'uva-lib:2807870' ]
 fmt = '/%s/%s/full/%s/0/default.jpg'
 
 def msg(s):
 	print '[TEST] %s' % (s)
 
+# allow specification of alternate script to test
 script = './iiifAcl.py'
 if len(sys.argv) > 1:
 	script = sys.argv[1]
