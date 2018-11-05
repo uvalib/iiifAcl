@@ -53,12 +53,7 @@ def warn(msg):
 	logging.warning('[%s] %s' % (line.strip(), msg))
 
 # apache communication loop
-while 1:
-
-	line = sys.stdin.readline()
-
-	if not line:
-		exit(0);
+for line in iter(sys.stdin.readline, ""):
 
 	# set default permission
 	perm = 'private'
@@ -105,4 +100,4 @@ while 1:
 			urlend = ''
 			perm = 'private'
 
-	print '/iiif%s/%s/%s' %(perm[:3],pid,urlend)
+	print '/iiif%s/%s/%s' % (perm[:3],pid,urlend)
