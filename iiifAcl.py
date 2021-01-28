@@ -93,6 +93,10 @@ for line in iter(sys.stdin.readline, ""):
 				# API error
 				warn('API request failed for url [%s]: %s' % (TSServiceURL, str(e)))
 				perm = 'public'
+			except socket.timeout, e:
+				# timeout
+				warn('API request timed out for url [%s]: %s' % (TSServiceURL, str(e)))
+				perm = 'public'
 		else:
 			# not a valid IIIF path
 			warn('invalid path')
