@@ -7,7 +7,7 @@ import logging
 from urllib2 import Request, urlopen, URLError
 
 # controls whether to use cached IP address workaround
-TSUseIPKludge = True
+TSUseIPKludge = False
 # controls whether to use prod values
 TSUseProdVals = True
 
@@ -15,8 +15,10 @@ TSUseProdVals = True
 
 if TSUseProdVals:
 	TSProtocol = 'http://'
-	TSHostName = 'tracksys.lib.virginia.edu'
-	TSAPIPath = '/api/pid/%s/rights'
+#	TSHostName = 'tracksys.lib.virginia.edu'
+#	TSAPIPath = '/api/pid/%s/rights'
+	TSHostName = 'rights-ws-production.private.production'
+	TSAPIPath = ':8080/%s'
 else:
 	TSProtocol = 'http://'
 #	TSHostName = 'tracksysdev.lib.virginia.edu'
@@ -26,7 +28,7 @@ else:
 
 TSDestination = TSHostName
 TSHeaders = {}
-TSTimeout = 2
+TSTimeout = 5
 
 if TSUseIPKludge:
 	# DNS lookups intermittently hang for ~5 seconds, affecting urlopen().
